@@ -1,0 +1,124 @@
+import React from "react";
+import PropTypes from "prop-types";
+
+class AddUser extends React.Component {
+  state = {
+    user: {
+      firstName: "",
+      lastName: "",
+      username: "",
+    },
+    userExists: false,
+  };
+  handleInput = (event) => {
+    const { name, value } = event.target;
+    this.setState((currState) => ({
+      ...currState,
+      user: {
+        ...currState.user,
+        [name]: value,
+      },
+    }));
+  };
+
+  isDisabled = () => {
+    const { firstName, lastName, username } = this.state.user;
+    return firstName === "" || lastName === "" || username === "";
+  };
+  contactExits = (currUser) => {
+    const users = this.props.users;
+    for (let user of users) {
+      if (currUser === user.username) {
+        return true;
+      }
+      return false;
+    }
+  };
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const userExists = this.contactExits(this.state.user.username);
+    if (!userExists) {
+      this.props.onAddUser(this.state.user);
+    }
+    this.setState(() => ({
+      userExists,
+    }));
+  };
+  render() {
+    const { firstName, lastName, username } = this.state.user;
+    return (
+      <div>
+        <form onSubmit={this.handleSubmit}>
+          <div>
+            <label htmlFor="first">First Name</label>
+            <input
+              type="text"
+              id="first"
+              value={firstName}
+              name="firstName"
+              placeholder="Enter first name"
+              onChange={this.handleInput}
+            />
+            <br />
+            <label htmlFor="last">last Name</label>
+            <input
+              type="text"
+              id="last"
+              value={lastName}
+              name="lastName"
+              placeholder="Enter Last name"
+              onChange={this.handleInput}
+            />
+            <br />
+            <label htmlFor="user">Username</label>
+            <input
+              type="text"
+              id="user"
+              value={username}
+              name="username"
+              placeholder="Enter username"
+              onChange={this.handleInput}
+            />
+          </div>
+          <button type="submit" value="submithere" disabled={this.isDisabled()}>
+            Add your Record
+          </button>
+        </form>
+      </div>
+    );
+  }
+}
+
+AddUser.prototypes = {
+  users: PropTypes.array.isRequired,
+  onAddUser: PropTypes.func.isRequired,
+};
+
+export default AddUser;
+
+import React from "react";
+import PropTypes from "prop-types";
+
+/*
+We can make this a Stateless Functional Component because this element doesn't
+need to hold its own state.
+*/
+const User = (props) => {
+  //return JSX
+  return (
+    <li className="user">
+      <p>Username: {props.user.username}</p>
+      <p>
+        Number of Games Played:{" "}
+        {props.showGamesPlayed ? props.user.numGamesPlayed : "*"}
+      </p>
+    </li>
+  );
+};
+
+User.propTypes = {
+  showGamesPlayed: PropTypes.bool.isRequired,
+  user: PropTypes.object.isRequired,
+};
+
+export default User;
